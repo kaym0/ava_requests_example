@@ -15,17 +15,17 @@ import json
 
 class Avabur(object):
     """avabur"""
-    def __init__(self, username, password, base_url="https://avabur.com/"):
+    def __init__(self, username, password, base_url="https://pendoria.net/"):
         """__init__
 
-        :param username: The username you are authenticating with.
-        :param password: The password you are authenticating with.
+        :param username: kaymo
+        :param password: xxxxxxxxx
         """
         #   Setup URLs
         self.base_url = base_url
-        self.login_url = self.base_url + "login.php"
-        self.clan_donation_url = self.base_url + "clan_donations.php"
-        self.clan_treasury_url = self.base_url + "clan_treasury.php"
+        self.login_url = self.base_url + "login"
+        self.copper = self.base_url + "market/api/display/copper"
+        self.food = self.base_url + "market/api/display/food"
 
         #   Create Session to magically handle our cookies and stuff
         self.session = requests.Session()
@@ -37,45 +37,41 @@ class Avabur(object):
         #   Vsyn does his stuff here, uses a single dictionary entry and has the data under "info"
         #   Normally a payload would look like:
         #   {"USERNAME": "figgis", "PASSWORD": "THISISTOTALLYMYPASSWORD"}
-        payload = {"info": "acctname={}&password={}".format(username, password)}
+        payload = {"username": "{}", "password": "{}", "login": "login".format(username, password)}
         response = self.session.post(self.login_url, data=payload)
         #   We can return the response in case we want to poke at this later.
         #   Probably would be best just returning nothing in practice though.
         print(response.content)
         # return response
 
-    def get_clan_donations(self, clan_id):
-        """get_clan_donations
+    def get_copper(self):
+        #  payload = {"clan": clan_id}
+        return self.session.post(self.copper)
 
-        :param clan_id: Your clan ID. You may not check other clan info. Legion is 26
-        """
-        payload = {"clan": clan_id}
-        return self.session.post(self.clan_donation_url, data=payload)
+    def get_food(self):
 
-    def get_clan_treasury(self, clan_id):
-        """get_clan_treasury
-
-        :param clan_id: Your clan ID. You may not check other clan info. Legion is 26
-        """
-        payload = {"clan": clan_id}
-        return self.session.post(self.clan_treasury_url, data=payload)
+        #  payload = {"clan": clan_id}
+        return self.session.post(self.food)
 
 
-def example_usage(username, password):
+def example_usage(username: str, password: str):
     """example_usage"""
     #   Create class which logs us in.
-    ava = Avabur(username=username, password=password)
+    ava = Avabur(username, password)
 
     #   lets get data and format it as json
     #   We need to use the ".content" to get data out of a requests(imported module) response
-    donations = json.loads(ava.get_clan_donations(clan_id=26).content)
-    funds = json.loads(ava.get_clan_treasury(clan_id=26).content)
+    copper = json.loads(ava.get_copper().content)
+    food = json.loads(ava.get_food().content)
 
     #   lets write this data to a file
     with open("donations.json", "w+") as file:
-        file.write(json.dumps(donations))
+        file.write(json.dumps(copper))
     with open("funds.json", "w+") as file:
-        file.write(json.dumps(funds))
+        file.write(json.dumps(food))
 
     #   This is the point where we would do something with the Google Sheets API
     #   Uploading the content, etc. Their guide walks through it and super easy.
+
+
+example_usage("kaymo", "xxxx")
